@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+    body {
+        margin: 0;
+    }
+    canvas {
+        display:block;
+    }
+</style>
+<script>
+window.requestAnimFrame = (function(callback) {
+	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+	function(callback) {
+		window.setTimeout(callback, 1000 / 30);
+	};
+})();
+(function () {
+    'use strict';
+    window.Keyboard = function() {
+        var canvas = document.createElement("canvas");
+        document.body.appendChild(canvas)
+        var context = canvas.getContext('2d');
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize',function() {resize();});
+        var touchList = [];
+        var mouse;
+        canvas.addEventListener("mousedown", function (e) {
+            mouse = e;
+        });
+        canvas.addEventListener("mousemove", function (e) {
+            mouse = e;
+        });
+        canvas.addEventListener("mouseup", function (e) {
+            mouse = e;
+        });
+        canvas.addEventListener("touchstart", function (e) {
+            touchList = e.touches;
+            e.preventDefault();
+        });
+        canvas.addEventListener("touchend", function (e) {
+            touchList = e.touches;
+            e.preventDefault();
+        });
+        canvas.addEventListener("touchmove", function (e) {
+            touchList = e.touches;
+            e.preventDefault();
+        });
+        
+        function animate() {
+            context.clearRect(0,0,canvas.width,canvas.height);
+            function draw(e) {
+                try {
+                    context.beginPath();
+                    context.arc(e.clientX, e.clientY, 50, 0, 2 * Math.PI, false);
+                    context.moveTo(e.clientX-50,e.clientY);
+                    context.lineTo(e.clientX+50,e.clientY);
+                    context.moveTo(e.clientX,e.clientY-50);
+                    context.lineTo(e.clientX,e.clientY+50);
+                    context.lineWidth = 1;
+                    context.strokeStyle = '#FF0000';
+                    context.stroke();
+                } catch(err) {
+                    
+                }
+            }
+            for (var i = 0; i < touchList.length; i++) {
+                draw(touchList[i]);
+            }
+            draw(mouse);
+            requestAnimFrame(function(){animate();});
+        }
+        animate();
+    }
+})();
+
+//Begin "main"
+var keyboard;
+window.addEventListener("load", function() {
+    keyboard = new Keyboard();
+});
+</script>
+</head>
+<body>
+</body>
+</html>
