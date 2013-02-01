@@ -29,6 +29,9 @@ window.requestAnimFrame = (function(callback) {
             canvas.height = window.innerHeight;
         }
         resize();
+        window.addEventListener('resize',resize);
+        
+        
         
         //All measurements are relative to
         //the size of 12 keys on a keyboard
@@ -58,7 +61,7 @@ window.requestAnimFrame = (function(callback) {
         var offsetY = 0;
         //size (pixels) of 12 key segment.
         var stretchX = 800;
-        var stretchY = 500;
+        var stretchY = 400;
         //amount the upper rows are moved to
         //the right, and vice versa.
         //measured relative to 12 key segment
@@ -68,18 +71,58 @@ window.requestAnimFrame = (function(callback) {
         //length of the black key relative to
         //the length of the white keys.
         //measured in percentile (0 to 1)
-        var blackKeyLength = .6;
+        var blackKeyLength = 0.6;
         
         function drawKeyboard() {
             //only need to draw enough segments to fill the canvas.
-            var top, left, bottom, right;
+            var currentOctave = 4;
+            var top = -canvas.height/2;
+            var bottom = -top;
+            var currentOffsetY = offsetY;
+            var currentOffsetX = 0;
+            while (currentOffsetY < top) {
+                currentOffsetY+=stretchY;
+                currentOffsetX-=skew*stretchX;
+            }
+            while (currentOffsetY >= top) {
+                currentOffsetY-=stretchY;
+                currentOffsetX+=skew*stretchX;
+            }
+            while (currentOffsetY <= bottom) {
+                drawKeyboardRow(currentOffsetX,currentOffsetY+canvas.height/2,currentOctave);
+                currentOffsetY+=stretchY;
+                currentOffsetX-=skew*stretchX;
+            }
+        }
+        /**
+         * draws one row of the keyboard
+         * at the given offset from the top center.
+         */
+        function drawKeyboardRow(x,y,o) {
+            var currentOctave = o; //C4
+            var left = -canvas.width/2;
+            var right = -left;
+            var currentOffset = x;
+            while (currentOffset < left) {
+                currentOffset+=stretchX;
+                currentOctave++;
+            }
+            while (currentOffset >= left) {
+                currentOffset-=stretchX;
+                currentOctave--;
+            }
+            while (currentOffset <= right) {
+                drawKeyboardSegment(currentOffset+canvas.width/2,y,currentOctave)
+                currentOffset+=stretchX;
+                currentOctave++;
+            }
             
         }
         /**
          * draws one 12-key segment of the keyboard
          * at the given offset from the top left corner
          */
-        function drawKeyboardSegment(x,y) {
+        function drawKeyboardSegment(x,y,o) {
             //white notes broken into 7ths,
             //for each white key
             for (var i = 0; i < 7; i++) {
@@ -105,13 +148,16 @@ window.requestAnimFrame = (function(callback) {
                     context.fillRect(x+blackOffsets[i]*stretchX, y, blackWidths[i]*stretchX, blackHeight);
                 }
             }
+            
+            context.font = '30pt Calibri';
+            context.textBaseline = 'top';
+            context.fillStyle = 'red';
+            context.fillText(o, x,y);
         }
         
-        var fred = 0;
         function animate() {
-            fred++;
             context.clearRect(0,0,1920,1080);
-            drawKeyboardSegment(fred,fred);
+            drawKeyboard();
             requestAnimFrame(function(){animate();});
         }
         animate();
