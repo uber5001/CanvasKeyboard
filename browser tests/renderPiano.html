@@ -30,7 +30,88 @@ window.requestAnimFrame = (function(callback) {
         }
         resize();
         
+        //All measurements are relative to
+        //the size of 12 keys on a keyboard
+        //I.E.: C thru B is length of 1.0f
+        //Thanks to http://www.quadibloc.com/other/cnv05.htm for measurements
+        var whiteWidths = [23,24,23,24,23,23,24];
+        var blackWidths = [14,14,14,14,14,13,14,13,14,13,14,13];
+        var whiteOffsets = [0];
+        var blackOffsets = [0];
+        for (var i in whiteWidths) {
+            whiteWidths[i] /= 164;
+            if (i != 0) {
+                whiteOffsets[i] = whiteOffsets[i-1] + whiteWidths[i-1];
+            }
+        }
+        for (var i in blackWidths) {
+            blackWidths[i] /= 164;
+            if (i != 0) {
+                blackOffsets[i] = blackOffsets[i-1] + blackWidths[i-1];
+            }
+        }
+        
+        //offset of the keyboard from the center
+        //measured in px
+        //TODO: try to keep offsetY near 0.
+        var offsetX = 0;
+        var offsetY = 0;
+        //size (pixels) of 12 key segment.
+        var stretchX = 800;
+        var stretchY = 500;
+        //amount the upper rows are moved to
+        //the right, and vice versa.
+        //measured relative to 12 key segment
+        //i.e.: skew=1; means one keyboard up
+        //is one octave up.
+        var skew = 1;
+        //length of the black key relative to
+        //the length of the white keys.
+        //measured in percentile (0 to 1)
+        var blackKeyLength = .6;
+        
+        function drawKeyboard() {
+            //only need to draw enough segments to fill the canvas.
+            var top, left, bottom, right;
+            
+        }
+        /**
+         * draws one 12-key segment of the keyboard
+         * at the given offset from the top left corner
+         */
+        function drawKeyboardSegment(x,y) {
+            //white notes broken into 7ths,
+            //for each white key
+            for (var i = 0; i < 7; i++) {
+                context.beginPath();
+                context.rect(x+whiteOffsets[i]*stretchX+1, y+1, whiteWidths[i]*stretchX-2, stretchY-2);
+                context.fillStyle = '#FAFAFA';
+                context.fill();
+                context.lineWidth = 2;
+                context.strokeStyle = 'black';
+                context.stroke();
+            }
+            //black keys broken into 12ths
+            var blackWidth = stretchX/12;
+            //and they have a unique height
+            var blackHeight = stretchY*blackKeyLength;
+            //but they only exist on certain 12ths:
+            var isBlack = [0,1,0,1,0,0,1,0,1,0,1,0];
+            //for every key on keyboard
+            for (var i = 0; i < 12; i++) {
+                if (isBlack[i]) {
+                    //draw the key
+                    context.fillStyle = 'black';
+                    context.fillRect(x+blackOffsets[i]*stretchX, y, blackWidths[i]*stretchX, blackHeight);
+                }
+            }
+        }
+        
+        var fred = 0;
         function animate() {
+            fred++;
+            context.clearRect(0,0,1920,1080);
+            drawKeyboardSegment(fred,fred);
             requestAnimFrame(function(){animate();});
         }
         animate();
