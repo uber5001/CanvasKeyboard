@@ -66,12 +66,27 @@ window.requestAnimFrame = (function(callback) {
         //the right, and vice versa.
         //measured relative to 12 key segment
         //i.e.: skew=1; means one keyboard up
-        //is one octave up.
-        var skew = 1;
+        //is one octave down.
+        var skew = -1;
         //length of the black key relative to
         //the length of the white keys.
         //measured in percentile (0 to 1)
         var blackKeyLength = 0.6;
+        //various key info 
+        var keyInfo = [
+            { name: "C",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "C#", color: "black", borderColor: "black", borderWidth: 2, nameColor: "white"},
+            { name: "D",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "D#", color: "black", borderColor: "black", borderWidth: 2, nameColor: "white"},
+            { name: "E",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "F",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "F#", color: "black", borderColor: "black", borderWidth: 2, nameColor: "white"},
+            { name: "G",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "G#", color: "black", borderColor: "black", borderWidth: 2, nameColor: "white"},
+            { name: "A",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"},
+            { name: "A#", color: "black", borderColor: "black", borderWidth: 2, nameColor: "white"},
+            { name: "B",  color: "white", borderColor: "black", borderWidth: 2, nameColor: "black"}
+        ]
         
         function drawKeyboard() {
             //only need to draw enough segments to fill the canvas.
@@ -79,7 +94,7 @@ window.requestAnimFrame = (function(callback) {
             var top = -canvas.height/2;
             var bottom = -top;
             var currentOffsetY = offsetY;
-            var currentOffsetX = 0;
+            var currentOffsetX = offsetX;
             while (currentOffsetY < top) {
                 currentOffsetY+=stretchY;
                 currentOffsetX-=skew*stretchX;
@@ -125,14 +140,22 @@ window.requestAnimFrame = (function(callback) {
         function drawKeyboardSegment(x,y,o) {
             //white notes broken into 7ths,
             //for each white key
+            var keyValue = [0,2,4,5,7,9,11];
             for (var i = 0; i < 7; i++) {
+                var key = keyInfo[keyValue[i]];
+                var p = key.borderWidth/2;
                 context.beginPath();
-                context.rect(x+whiteOffsets[i]*stretchX+1, y+1, whiteWidths[i]*stretchX-2, stretchY-2);
-                context.fillStyle = '#FAFAFA';
+                context.rect(x+whiteOffsets[i]*stretchX+p, y+p, whiteWidths[i]*stretchX-2*p, stretchY-2*p);
+                context.fillStyle = key.color;
                 context.fill();
-                context.lineWidth = 2;
-                context.strokeStyle = 'black';
+                context.lineWidth = key.borderWidth;
+                context.strokeStyle = key.borderColor;
                 context.stroke();
+                context.font = Math.floor(stretchX/7/5)+'pt Calibri';
+                context.textBaseline = 'bottom';
+                context.textAlign = 'center';
+                context.fillStyle = key.borderColor;
+                context.fillText(key.name+o, x+(whiteOffsets[i]+whiteWidths[i]/2)*stretchX,y+stretchY);
             }
             //black keys broken into 12ths
             var blackWidth = stretchX/12;
@@ -143,24 +166,41 @@ window.requestAnimFrame = (function(callback) {
             //for every key on keyboard
             for (var i = 0; i < 12; i++) {
                 if (isBlack[i]) {
+                    var key = keyInfo[i];
                     //draw the key
-                    context.fillStyle = 'black';
+                    context.fillStyle = keyInfo[i].color;
                     context.fillRect(x+blackOffsets[i]*stretchX, y, blackWidths[i]*stretchX, blackHeight);
+                    
+                    context.font = Math.floor(stretchX/7/5)+'pt Calibri';
+                    context.textBaseline = 'bottom';
+                    context.textAlign = 'center';
+                    context.fillStyle = key.nameColor;
+                    context.fillText(key.name+o, x+(blackOffsets[i]+blackWidths[i]/2)*stretchX,y+blackHeight);
                 }
             }
-            
-            context.font = '30pt Calibri';
-            context.textBaseline = 'top';
-            context.fillStyle = 'red';
-            context.fillText(o, x,y);
+        }
+        
+        function fixSkewRow() {
+            var topOfSkewRow = -stretchY/2;
+            while (offsetY > topOfSkewRow) {
+                offsetY -= stretchY;
+                offsetX += stretchX*skew;
+            }
+            while (offsetY <= topOfSkewRow) {
+                offsetY += stretchY;
+                offsetX -= stretchX*skew;
+            }
         }
         
         function animate() {
+            fixSkewRow();
             context.clearRect(0,0,1920,1080);
             drawKeyboard();
             requestAnimFrame(function(){animate();});
         }
         animate();
+        
+        
     }
 })();
 
