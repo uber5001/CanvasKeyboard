@@ -31,22 +31,108 @@ window.requestAnimFrame = (function(callback) {
         resize();
         window.addEventListener('resize',resize);
         
-        var offsetX = 0;
-        var offsetY = 0;
+        var offsetX = 400;
+        var offsetY = 300;
         
-        var ruleA = 7;
-        var ruleB = 5;
+        var ruleA = 2;
+        var ruleB = -5;
         
-        var rotation = 0;
+        var isHorizontal = true;
         
         var stretchXY = 100;
         
-        function drawKeyboard() {
+        var drawList = [];
+        
+        function fixKeyboard() {
+            drawList = [];
+            var currentX = offsetX;
+            var currentY = offsetY;
             var currentMidiValue = 60; //C4
+            var left = -canvas.width/2-stretchXY*.66;
+            var right = -left;
+            var top = -canvas.height/2-stretchXY*.66;
+            var bottom = -top;
+            left -= offsetX;
+            right -= offsetX;
+            top -= offsetY;
+            bottom -= offsetY;
             
+            if (isHorizontal) {
+                //fix vertically
+                var movement = 2*stretchXY*Math.sqrt(3)/2;
+                var change = {
+                    x: {
+                        x: movement,
+                        y: 0,
+                        o: ruleA
+                    },
+                    y: {
+                        x: movement*Math.cos(Math.PI/3),
+                        y: movement*Math.sin(Math.PI/3),
+                        o: ruleB
+                    }
+                }
+                
+                
+                while (currentY < top) {
+                    currentX += change.y.x;
+                    currentY += change.y.y;
+                    currentMidiValue += change.y.o;
+                }
+                while (currentY > top) {
+                    currentX -= change.y.x;
+                    currentY -= change.y.y;
+                    currentMidiValue -= change.y.o;
+                }
+                
+                while (currentX < left) {
+                    currentX += change.x.x;
+                    currentY += change.x.y;
+                    currentMidiValue += change.x.o;
+                }
+                while (currentX > left) {
+                    currentX -= change.x.x;
+                    currentY -= change.x.y;
+                    currentMidiValue -= change.x.o;
+                }
+                //each row
+                var shiftLeftThisIteration = true;
+                while (currentY < movement+bottom) {
+                    //each column in that row
+                    var tempX = currentX;
+                    var tempY = currentY;
+                    var tempO = currentMidiValue;
+                    while(tempX < movement+right) {
+                        drawList.push( {
+                            x: tempX,
+                            y: tempY,
+                            o: tempO
+                        } );
+                        tempX += change.x.x;
+                        tempY += change.x.y;
+                        tempO += change.x.o;
+                    }
+                    currentX += change.y.x;
+                    currentY += change.y.y;
+                    currentMidiValue += change.y.o;
+                    if (shiftLeftThisIteration) {
+                        currentX -= change.x.x;
+                        currentY -= change.x.y;
+                        currentMidiValue -= change.x.o;
+                    }
+                    shiftLeftThisIteration = !shiftLeftThisIteration;
+                }
+            }
         }
         
-        function drawKey(x,y) {
+        function drawKeyboard() {
+            for (var i in drawList) {
+                var j = drawList[i];
+                drawKey(j.x,j.y,j.o);
+            }
+        }
+        
+        function drawKey(x,y,o) {
             x = offsetX+x+canvas.width/2;
             y = offsetY+y+canvas.height/2;
             context.beginPath();
@@ -62,22 +148,24 @@ window.requestAnimFrame = (function(callback) {
         }
         
         function pathHexagon(x,y,scale) {
-            context.moveTo(x+scale*stretchXY*Math.cos(rotation),y+scale*stretchXY*Math.sin(rotation));
+            var r = (isHorizontal ? 0 : Math.PI/2)+Math.PI/6;
+            context.moveTo(x+scale*stretchXY*Math.cos(r),y+scale*stretchXY*Math.sin(r));
             for (var i = 0; i < 5; i++) {
-                rotation+=Math.PI/3;
-                context.lineTo(x+scale*stretchXY*Math.cos(rotation),y+scale*stretchXY*Math.sin(rotation));
+                r+=Math.PI/3;
+                context.lineTo(x+scale*stretchXY*Math.cos(r),y+scale*stretchXY*Math.sin(r));
             }
             context.closePath();
         }
         
         function animate() {
-            context.clearRect(0,0,1920,1080);
-            drawKey(0,0);
+            context.clearRect(0,0,canvas.width, canvas.height);
+            offsetX++;
+            offsetY++;
+            drawKeyboard();
             requestAnimFrame(function(){animate();});
         }
         animate();
-        
-        
+        fixKeyboard();
     }
 })();
 
