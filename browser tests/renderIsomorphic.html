@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+    body {
+        margin: 0;
+    }
+    canvas {
+        display:block;
+    }
+</style>
+<script src="keymap.js"></script>
+<script>
+window.requestAnimFrame = (function(callback) {
+	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+	function(callback) {
+		window.setTimeout(callback, 1000 / 30);
+	};
+})();
+(function () {
+    'use strict';
+    window.Keyboard = function() {
+        var canvas = document.createElement("canvas");
+        document.body.appendChild(canvas);
+        var context = canvas.getContext('2d');
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize',resize);
+        
+        var offsetX = 0;
+        var offsetY = 0;
+        
+        var ruleA = 7;
+        var ruleB = 5;
+        
+        var rotation = 0;
+        
+        var stretchXY = 100;
+        
+        function drawKeyboard() {
+            
+        }
+        
+        function drawKey(x,y) {
+            x = offsetX+x+canvas.width/2;
+            y = offsetY+y+canvas.height/2;
+            context.beginPath();
+            pathHexagon(x,y,1);
+            context.fillStyle = 'cyan';
+            context.strokeStyle = 'black';
+            context.lineWidth = stretchXY/4;
+            context.fill();
+            context.beginPath();
+            pathHexagon(x,y,.8);
+            context.stroke();
+            context.fill();
+        }
+        
+        function pathHexagon(x,y,scale) {
+            context.moveTo(x+scale*stretchXY*Math.cos(rotation),y+scale*stretchXY*Math.sin(rotation));
+            for (var i = 0; i < 5; i++) {
+                rotation+=Math.PI/3;
+                context.lineTo(x+scale*stretchXY*Math.cos(rotation),y+scale*stretchXY*Math.sin(rotation));
+            }
+            context.closePath();
+        }
+        
+        function animate() {
+            context.clearRect(0,0,1920,1080);
+            drawKey(0,0);
+            requestAnimFrame(function(){animate();});
+        }
+        animate();
+        
+        
+    }
+})();
+
+//Begin "main"
+var keyboard;
+window.addEventListener("load", function() {
+    keyboard = new Keyboard();
+});
+</script>
+</head>
+<body>
+</body>
+</html>
