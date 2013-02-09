@@ -27,6 +27,8 @@ window.requestAnimFrame = (function(callback) {
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            fixKeyboard();
+            repaint();
         }
         resize();
         window.addEventListener('resize',resize);
@@ -39,14 +41,16 @@ window.requestAnimFrame = (function(callback) {
         
         var isHorizontal = true;
         
-        var stretchXY = 100;
+        var stretchXY = 60;
         
         var drawList = [];
         
+        var change = {};
+        
         function fixKeyboard() {
             drawList = [];
-            var currentX = offsetX;
-            var currentY = offsetY;
+            var currentX = 0;
+            var currentY = 0;
             var currentMidiValue = 60; //C4
             var left = -canvas.width/2-stretchXY*.66;
             var right = -left;
@@ -60,7 +64,7 @@ window.requestAnimFrame = (function(callback) {
             if (isHorizontal) {
                 //fix vertically
                 var movement = 2*stretchXY*Math.sqrt(3)/2;
-                var change = {
+                change = {
                     x: {
                         x: movement,
                         y: 0,
@@ -125,26 +129,201 @@ window.requestAnimFrame = (function(callback) {
             }
         }
         
+        this.hit = function(x,y) {
+            x -= canvas.width/2+offsetX;
+            y -= canvas.height/2+offsetY;
+            var currentX = 0;
+            var currentY = 0;
+            var currentMidiValue = 60;
+                while (currentY < y) {
+                    currentX += change.y.x;
+                    currentY += change.y.y;
+                    currentMidiValue += change.y.o;
+                }
+                while (currentY > y) {
+                    currentX -= change.y.x;
+                    currentY -= change.y.y;
+                    currentMidiValue -= change.y.o;
+                }
+                //row above or at cursor
+                
+                while (currentX < x) {
+                    currentX += change.x.x;
+                    currentY += change.x.y;
+                    currentMidiValue += change.x.o;
+                }
+                while (currentX > x) {
+                    currentX -= change.x.x;
+                    currentY -= change.x.y;
+                    currentMidiValue -= change.x.o;
+                }
+                var pt = [ //potential targets
+                    {
+                        x: currentX,
+                        y: currentY,
+                        o: currentMidiValue,
+                        d: 0
+                    },{
+                        x: currentX + change.x.x,
+                        y: currentY + change.x.y,
+                        o: currentMidiValue + change.x.o,
+                        d: 0
+                    },{
+                        x: currentX + change.y.x,
+                        y: currentY + change.y.y,
+                        o: currentMidiValue + change.y.o,
+                        d: 0
+                    },{
+                        x: currentX - change.x.x,
+                        y: currentY - change.x.y,
+                        o: currentMidiValue - change.x.o,
+                        d: 0
+                    },{
+                        x: currentX - change.y.x,
+                        y: currentY - change.y.y,
+                        o: currentMidiValue - change.y.o,
+                        d: 0
+                    },{
+                        x: currentX - change.x.x + change.y.x,
+                        y: currentY - change.x.y + change.y.y,
+                        o: currentMidiValue - change.x.o + change.y.o,
+                        d: 0
+                    },{
+                        x: currentX - change.y.x + change.x.x,
+                        y: currentY - change.y.y + change.x.y,
+                        o: currentMidiValue - change.y.o + change.x.o,
+                        d: 0
+                    }
+                ];
+                var closest = pt[0];
+                for (var i = 0; i < pt.length; i++) {
+                    pt[i].d = Math.sqrt(Math.pow(pt[i].x-x,2)+Math.pow(pt[i].y-y,2));
+                    if (pt[i].d < closest.d) closest = pt[i];
+                }
+            return closest.o;
+        }
+        this.noteOn = function(o) {
+            notesHeld[o] = true;
+            repaint();
+        }
+        this.noteOff = function(o) {
+            notesHeld[o] = false;
+            repaint();
+        }
         function drawKeyboard() {
             for (var i in drawList) {
                 var j = drawList[i];
                 drawKey(j.x,j.y,j.o);
             }
         }
-        
+        var noteStyles = [
+            {
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            },{
+                normal: {
+                    backgroundColor: "cyan"
+                },
+                active: {
+                    backgroundColor: "blue"
+                }
+            }
+        ];
+        var notesHeld = [];
         function drawKey(x,y,o) {
             x = offsetX+x+canvas.width/2;
             y = offsetY+y+canvas.height/2;
             context.beginPath();
             pathHexagon(x,y,1);
-            context.fillStyle = 'cyan';
+            context.fillStyle = noteStyles[o%12].normal.backgroundColor;
+            if (notesHeld[o] == true)
+                context.fillStyle = noteStyles[o%12].active.backgroundColor;
             context.strokeStyle = 'black';
-            context.lineWidth = stretchXY/4;
+            context.lineWidth = stretchXY/2;
             context.fill();
             context.beginPath();
-            pathHexagon(x,y,.8);
+            pathHexagon(x,y,.66);
             context.stroke();
             context.fill();
+            context.fillStyle = "white";
+            context.textBaseline = "middle";
+            context.textAlign = "center";
+            context.font = stretchXY*.8+'px Calibri';
+            context.fillText(o, x, y);
         }
         
         function pathHexagon(x,y,scale) {
@@ -156,16 +335,11 @@ window.requestAnimFrame = (function(callback) {
             }
             context.closePath();
         }
-        
-        function animate() {
-            context.clearRect(0,0,canvas.width, canvas.height);
-            offsetX++;
-            offsetY++;
-            drawKeyboard();
-            requestAnimFrame(function(){animate();});
-        }
-        animate();
         fixKeyboard();
+        function repaint() {
+            requestAnimFrame(function() {drawKeyboard();});
+        }
+        repaint();
     }
 })();
 
@@ -173,6 +347,9 @@ window.requestAnimFrame = (function(callback) {
 var keyboard;
 window.addEventListener("load", function() {
     keyboard = new Keyboard();
+    window.addEventListener("mousedown", function(e) {
+        keyboard.noteOn(keyboard.hit(e.clientX, e.clientY));
+    });
 });
 </script>
 </head>
