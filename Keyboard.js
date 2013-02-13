@@ -7,8 +7,8 @@
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            getCurrentKeyboard().resize();
         }
-        resize();
         window.addEventListener('resize',resize);
         var isMouseDown = false;
         var previousNote = 0;
@@ -30,6 +30,12 @@
             previousNote = releaseNote(getCurrentKeyboard().hit(e.clientX,e.clientY));
             isMouseDown = false;
         });
+		window.addEventListener('keydown', function(e) {
+			pressNote(alphanumeric.hit(e.keyCode));
+		});
+		window.addEventListener('keyup', function(e) {
+			releaseNote(alphanumeric.hit(e.keyCode));
+		});
         
         var currentKeyboard = 'isomorphic';
         
@@ -522,12 +528,18 @@
             }
             this.resize = function() {
                 fixKeyboard();
-                repaint();
+                drawKeyboard();
             }
             
         }();
         
-        
+        var alphanumeric = new function() {
+            //Keymap object is important here!
+            this.hit = function(key) {
+				if (Keymap[key] == undefined) return -1;
+				return 69+2*Keymap[key].x-5*Keymap[key].y;
+			}
+        }
         
         
         function repaint() {
@@ -566,7 +578,9 @@
         this.removeNoteListener = function(listener) {
             listenerList.splice(indexOf(listener),1);
         }
+        resize();
     }
+
     var Keymap = {
         49 :{x: 0, y:0, k:"1"},
         50 :{x: 1, y:0, k:"2"},

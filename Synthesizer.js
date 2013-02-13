@@ -3,6 +3,9 @@
     window.Synthesizer = function() {
         var context = new webkitAudioContext();
         var destination = context.destination;
+		var gain = context.createGainNode();
+		gain.gain.value = .2;
+		gain.connect(context.destination);
         var channels = [];
         var type = "sawtooth";
         this.noteOn = function(note) {
@@ -10,7 +13,7 @@
             channels[note] = new adsr(context, .01, .1, .1, .3);
             channels[note].frequency.value = 440*Math.pow(2,(note-57)/12);
             channels[note].type = type;
-            channels[note].connect(destination);
+            channels[note].connect(gain);
             channels[note].start(context.currentTime);
         }
         this.noteOff = function(note) {
