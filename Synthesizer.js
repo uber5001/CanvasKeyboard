@@ -4,13 +4,15 @@
         var context = new webkitAudioContext();
         var destination = context.destination;
 		var gain = context.createGainNode();
+		var filter = context.createBiquadFilter();
 		gain.gain.value = .2;
-		gain.connect(context.destination);
+		gain.connect(filter);
+		filter.connect(context.destination);
         var channels = [];
         var type = "sawtooth";
         this.noteOn = function(note) {
             if (channels[note]) return;
-            channels[note] = new adsr(context, .01, .1, .1, .3);
+            channels[note] = new adsr(context, .01, 2, .3, .3);
             channels[note].frequency.value = 440*Math.pow(2,(note-57)/12);
             channels[note].type = type;
             channels[note].connect(gain);

@@ -537,7 +537,7 @@
             //Keymap object is important here!
             this.hit = function(key) {
 				if (Keymap[key] == undefined) return -1;
-				return 69+2*Keymap[key].x-5*Keymap[key].y;
+				return 45+2*Keymap[key].x-5*Keymap[key].y;
 			}
         }
         
