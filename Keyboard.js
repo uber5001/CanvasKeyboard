@@ -38,6 +38,7 @@
 		});
 		var oldTouchNotes = [];
 		function handleTouch(e) {
+			e.preventDefault();
 			var newTouchNotes = [];
 			for (var touch in e.touches) {
 				if (!isNaN(touch)) {
@@ -58,6 +59,7 @@
 		window.addEventListener('touchmove', handleTouch);
 		window.addEventListener('touchstart', handleTouch);
 		window.addEventListener('touchend', handleTouch);
+		window.addEventListener('touchcancel', handleTouch);
         
         var currentKeyboard = 'isomorphic';
         
