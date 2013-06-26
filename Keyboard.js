@@ -36,6 +36,28 @@
 		window.addEventListener('keyup', function(e) {
 			releaseNote(alphanumeric.hit(e.keyCode));
 		});
+		var oldTouchNotes = [];
+		function handleTouch(e) {
+			var newTouchNotes = [];
+			for (var touch in e.touches) {
+				if (!isNaN(touch)) {
+					var currentNote = pressNote(getCurrentKeyboard().hit(e.touches[touch].clientX,e.touches[touch].clientY));
+					for (var note in oldTouchNotes) {
+						if (oldTouchNotes[note] == currentNote) {
+							oldTouchNotes.splice(note, 1);
+						}
+					}
+					newTouchNotes.push(currentNote);
+				}
+			}
+			for (note in oldTouchNotes) {
+				releaseNote(oldTouchNotes[note]);
+			}
+			oldTouchNotes = newTouchNotes;
+		}
+		window.addEventListener('touchmove', handleTouch);
+		window.addEventListener('touchstart', handleTouch);
+		window.addEventListener('touchend', handleTouch);
         
         var currentKeyboard = 'isomorphic';
         
