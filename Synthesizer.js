@@ -3,7 +3,7 @@
     window.Synthesizer = function() {
         var context = new webkitAudioContext();
         var destination = context.destination;
-		var gain = context.createGainNode();
+		var gain = context.createGain();
 		var filter = context.createBiquadFilter();
 		gain.gain.value = .2;
 		gain.connect(filter);
@@ -25,8 +25,8 @@
     }
     function adsr(context,pa,pd,ps,pr) {
         var osc = context.createOscillator();
-        var g1 = context.createGainNode();
-        var g2 = context.createGainNode();
+        var g1 = context.createGain();
+        var g2 = context.createGain();
         var a = pa;
         var d = pd;
         var s = ps;
