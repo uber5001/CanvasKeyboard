@@ -31,10 +31,14 @@
             isMouseDown = false;
         });
 		window.addEventListener('keydown', function(e) {
-			pressNote(alphanumeric.hit(e.keyCode));
+			var note = alphanumeric.hit(e.keyCode);
+			if (note !== -1)
+				pressNote(note);
 		});
 		window.addEventListener('keyup', function(e) {
-			releaseNote(alphanumeric.hit(e.keyCode));
+			var note = alphanumeric.hit(e.keyCode);
+			if (note !== -1)
+				releaseNote(note);
 		});
 		var oldTouchNotes = [];
 		function handleTouch(e) {
@@ -544,8 +548,24 @@
                 context.closePath();
             }
             fixKeyboard();
+			var paintQueued = false;
+			var paintWaiting = false;
+			var n = 0;
             function repaint() {
-                requestAnimationFrame(function() {drawKeyboard();});
+				if (paintQueued) {
+					paintWaiting = true;
+					return;
+				}
+				paintQueued = true;
+                requestAnimationFrame(function() {
+					console.log(++n);
+					drawKeyboard();
+					if (paintWaiting) {
+						setTimeout(repaint,0);
+						paintWaiting = false;
+					}
+					paintQueued = false;
+				});
             }
             this.__animate = function() {
                 drawKeyboard();
