@@ -1,7 +1,7 @@
 (function() {
     'use strict';
     window.Synthesizer = function() {
-        var context = new webkitAudioContext();
+        var context = new AudioContext();
         var destination = context.destination;
 		var gain = context.createGain();
 		var filter = context.createBiquadFilter();
