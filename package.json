@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/uber5001/CanvasKeyboard/issues"
   },
-  "homepage": "https://github.com/uber5001/CanvasKeyboard#readme"
+  "homepage": "https://github.com/uber5001/CanvasKeyboard#readme",
+  "devDependencies": {
+    "webpack": "^4.6.0"
+  }
 }
