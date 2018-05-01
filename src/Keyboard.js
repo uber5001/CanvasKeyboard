@@ -430,89 +430,41 @@ export default function Keyboard() {
         }
         var noteStyles = [
             {
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "#008888"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#057"},
+                active: {backgroundColor: "#0AF"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "#008888"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#057"},
+                active: {backgroundColor: "#0AF"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "#008888"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#057"},
+                active: {backgroundColor: "#0AF"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "#008888"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#057"},
+                active: {backgroundColor: "#0AF"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             },{
-                normal: {
-                    backgroundColor: "#008888"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#057"},
+                active: {backgroundColor: "#0AF"}
             },{
-                normal: {
-                    backgroundColor: "cyan"
-                },
-                active: {
-                    backgroundColor: "blue"
-                }
+                normal: {backgroundColor: "#077"},
+                active: {backgroundColor: "#0EE"}
             }
         ];
         var notesHeld = [];
@@ -520,15 +472,15 @@ export default function Keyboard() {
             x = offsetX+x+canvas.width/2;
             y = offsetY+y+canvas.height/2;
             context.beginPath();
-            pathHexagon(x,y,1);
+            pathHexagon(x,y,0.95);
             context.fillStyle = noteStyles[o%12].normal.backgroundColor;
             if (notesHeld[o] == true)
                 context.fillStyle = noteStyles[o%12].active.backgroundColor;
             context.strokeStyle = 'black';
-            context.lineWidth = stretchXY/2;
+            context.lineWidth = stretchXY/20;
             context.fill();
             context.beginPath();
-            pathHexagon(x,y,.66);
+            pathHexagon(x,y,.95);
             context.stroke();
             context.fill();
             context.fillStyle = "white";
