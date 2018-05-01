@@ -1,16 +1,14 @@
 export default function Synthesizer() {
-    var context = new AudioContext();
-    var destination = context.destination;
-    var gain = context.createGain();
-    var filter = context.createBiquadFilter();
-    gain.gain.value = .2;
-    gain.connect(filter);
-    filter.connect(context.destination);
-    var channels = [];
-    var type = "sawtooth";
+    const context = new AudioContext();
+    const destination = context.destination;
+    const gain = context.createGain();
+    gain.gain.value = .1;
+    gain.connect(context.destination);
+    const channels = [];
+    const type = "square";
     this.noteOn = function(note) {
         if (channels[note]) return;
-        channels[note] = new adsr(context, .01, 2, .3, .3);
+        channels[note] = new adsr(context, 0, 2, .3, .3);
         channels[note].frequency.value = 440*Math.pow(2,(note-57)/12);
         channels[note].type = type;
         channels[note].connect(gain);
@@ -22,17 +20,16 @@ export default function Synthesizer() {
     }
 }
 
-function adsr(context,pa,pd,ps,pr) {
-    var osc = context.createOscillator();
-    var g1 = context.createGain();
-    var g2 = context.createGain();
-    var a = pa;
-    var d = pd;
-    var s = ps;
-    var r = pr;
-    osc.connect(g1);
+function adsr(context,a,d,s,r,fa=0,fd=0.1) {
+    const osc = context.createOscillator();
+    const bf = context.createBiquadFilter();
+    const g1 = context.createGain();
+    const g2 = context.createGain();
+    osc.connect(bf);
+    bf.connect(g1);
     g1.connect(g2);
     //levels are 0 to 1
+    bf.frequency.setValueAtTime(400, 0);
     g1.gain.setValueAtTime(0,0);
     g2.gain.setValueAtTime(1,0);
     
@@ -46,9 +43,12 @@ function adsr(context,pa,pd,ps,pr) {
     Object.defineProperty(this, "detune", {get : function(){return osc.detune}});
 
     this.start = function(when) {
-        g1.gain.setValueAtTime(0,when);
+        g1.gain.setValueAtTime(0, when);
+        bf.frequency.setValueAtTime(osc.frequency.value, when);
         g1.gain.linearRampToValueAtTime(1,when+a);
+        bf.frequency.exponentialRampToValueAtTime(osc.frequency.value*8, when+fa);
         g1.gain.linearRampToValueAtTime(s,when+a+d);
+        bf.frequency.exponentialRampToValueAtTime(osc.frequency.value*2, when+fa+fd);
         osc.start(when);
     }
     this.stop = function(when) {

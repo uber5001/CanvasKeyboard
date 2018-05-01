@@ -550,7 +550,6 @@ export default function Keyboard() {
         fixKeyboard();
         var paintQueued = false;
         var paintWaiting = false;
-        var n = 0;
         function repaint() {
             if (paintQueued) {
                 paintWaiting = true;
@@ -558,7 +557,6 @@ export default function Keyboard() {
             }
             paintQueued = true;
             requestAnimationFrame(function() {
-                console.log(++n);
                 drawKeyboard();
                 if (paintWaiting) {
                     setTimeout(repaint,0);
@@ -616,6 +614,7 @@ export default function Keyboard() {
     
     
     var listenerList = [];
+    /** Adds a note listener, which should implement `noteOn` and `noteOff` */
     this.addNoteListener = function(listener) {
         listenerList.push(listener);
     }
