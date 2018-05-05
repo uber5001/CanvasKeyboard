@@ -1270,24 +1270,27 @@ function Keyboard() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Synthesizer; });
 function Synthesizer() {
-    const context = new AudioContext();
-    const destination = context.destination;
-    const gain = context.createGain();
-    gain.gain.value = .1;
-    gain.connect(context.destination);
-    const channels = [];
-    const type = "square";
-    this.noteOn = function(note) {
-        if (channels[note]) return;
-        channels[note] = new adsr(context, 0, 2, .3, .3);
-        channels[note].frequency.value = 440*Math.pow(2,(note-57)/12);
-        channels[note].type = type;
-        channels[note].connect(gain);
-        channels[note].start(context.currentTime);
-    }
-    this.noteOff = function(note) {
-        channels[note].stop(context.currentTime);
-        channels[note] = false;
+    this.noteOn = (note) => {
+        const context = new AudioContext();
+        const destination = context.destination;
+        const gain = context.createGain();
+        gain.gain.value = .1;
+        gain.connect(context.destination);
+        const channels = [];
+        const type = "square";
+        this.noteOn = function(note) {
+            if (channels[note]) return;
+            channels[note] = new adsr(context, 0, 2, .3, .3);
+            channels[note].frequency.value = 440*Math.pow(2,(note-57)/12);
+            channels[note].type = type;
+            channels[note].connect(gain);
+            channels[note].start(context.currentTime);
+        }
+        this.noteOff = function(note) {
+            channels[note].stop(context.currentTime);
+            channels[note] = false;
+        }
+        this.noteOn(note);
     }
 }
 
