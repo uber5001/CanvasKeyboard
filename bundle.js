@@ -1271,7 +1271,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Synthesizer; });
 function Synthesizer() {
     this.noteOn = (note) => {
-        const context = new AudioContext();
+        const context = new (window.AudioContext || window.webkitAudioContext)();
         const destination = context.destination;
         const gain = context.createGain();
         gain.gain.value = .1;
