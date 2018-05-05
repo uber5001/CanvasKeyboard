@@ -1,6 +1,6 @@
 export default function Synthesizer() {
     this.noteOn = (note) => {
-        const context = new AudioContext();
+        const context = new (window.AudioContext || window.webkitAudioContext)();
         const destination = context.destination;
         const gain = context.createGain();
         gain.gain.value = .1;
