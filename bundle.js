@@ -686,8 +686,8 @@ function Keyboard() {
     document.body.appendChild(canvas);
     var context = canvas.getContext('2d');
     function resize() {
-        canvas.width = window.outerWidth;
-        canvas.height = window.outerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
         getCurrentKeyboard().resize();
     }
     window.addEventListener('resize',resize);
