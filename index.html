@@ -88,7 +88,7 @@ exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/li
 
 
 // module
-exports.push([module.i, "body {\r\n    margin: 0;\r\n    background-color: #012;\r\n}\r\ncanvas {\r\n    display: block;\r\n}", ""]);
+exports.push([module.i, "body {\r\n    margin: 0;\r\n    background-color: #012;\r\n    width: 100%;\r\n}\r\ncanvas {\r\n    display: block;\r\n    width: 100%;\r\n}", ""]);
 
 // exports
 
@@ -691,8 +691,8 @@ function Keyboard() {
     document.body.appendChild(canvas);
     var context = canvas.getContext('2d');
     function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.outerWidth;
+        canvas.height = window.outerHeight;
         getCurrentKeyboard().resize();
     }
     window.addEventListener('resize',resize);
@@ -746,10 +746,10 @@ function Keyboard() {
         }
         oldTouchNotes = newTouchNotes;
     }
-    window.addEventListener('touchmove', handleTouch);
-    window.addEventListener('touchstart', handleTouch);
-    window.addEventListener('touchend', handleTouch);
-    window.addEventListener('touchcancel', handleTouch);
+    window.addEventListener('touchmove', handleTouch, {passive: false});
+    window.addEventListener('touchstart', handleTouch, {passive: false});
+    window.addEventListener('touchend', handleTouch, {passive: false});
+    window.addEventListener('touchcancel', handleTouch, {passive: false});
     
     var currentKeyboard = 'isomorphic';
     
@@ -946,6 +946,7 @@ function Keyboard() {
         var change = {};
         
         function fixKeyboard() {
+            stretchXY = 60;
             drawList = [];
             var currentX = 0;
             var currentY = 0;
