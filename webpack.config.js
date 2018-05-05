@@ -26,7 +26,7 @@ module.exports = {
             filename: 'index.html',
             inject: 'head',
             cache: false,
-            meta: 'width=device-width, initial-scale=1',
+            meta: {viewport:'width=device-width, initial-scale=1, user-scalable=no'},
             inlineSource: '.(js|css)$'
         }),
         new HtmlWebpackInlineSourcePlugin()
