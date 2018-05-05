@@ -60,10 +60,10 @@ export default function Keyboard() {
         }
         oldTouchNotes = newTouchNotes;
     }
-    window.addEventListener('touchmove', handleTouch);
-    window.addEventListener('touchstart', handleTouch);
-    window.addEventListener('touchend', handleTouch);
-    window.addEventListener('touchcancel', handleTouch);
+    window.addEventListener('touchmove', handleTouch, {passive: false});
+    window.addEventListener('touchstart', handleTouch, {passive: false});
+    window.addEventListener('touchend', handleTouch, {passive: false});
+    window.addEventListener('touchcancel', handleTouch, {passive: false});
     
     var currentKeyboard = 'isomorphic';
     
@@ -260,6 +260,7 @@ export default function Keyboard() {
         var change = {};
         
         function fixKeyboard() {
+            stretchXY = 60;
             drawList = [];
             var currentX = 0;
             var currentY = 0;
